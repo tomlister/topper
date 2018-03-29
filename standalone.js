@@ -67,7 +67,7 @@ function main() {
 		}
 	}
 	//collision system
-	function collison(attemptx, attempty) {
+	function collision(attemptx, attempty) {
 		//check if attempted location is a barrier/wall
 		if (world[attempty][attemptx] == "#") {
 			//make bell sound
@@ -91,25 +91,25 @@ function main() {
 	process.stdin.on('keypress', function (chunk, key) {
 	  if (key.name == "up") {
 	  	//modify player position
-	  	if (!collison(player.x, player.y - 1)) {
+	  	if (!collision(player.x, player.y - 1)) {
 	  		player.y -= 1;
 	  		render()
 	  	}
 	  } else if (key.name == "down") {
 	  	//ditto
-	  	if (!collison(player.x, player.y + 1)) {
+	  	if (!collision(player.x, player.y + 1)) {
 	  		player.y += 1;
 	  		render()
 	  	}
 	  } else if (key.name == "left") {
 	  	//ditto
-	  	if (!collison(player.x - 1, player.y)) {
+	  	if (!collision(player.x - 1, player.y)) {
 	  		player.x -= 1;
 	  		render()
 	  	}
 	  } else if (key.name == "right") {
 	  	//ditto
-	  	if (!collison(player.x + 1, player.y)) {
+	  	if (!collision(player.x + 1, player.y)) {
 	  		player.x += 1;
 	  		render()
 	  	}
