@@ -42,13 +42,6 @@ function collision(attemptx, attempty) {
 	if (world[attempty][attemptx] == "#") {
 		return true;
 	} else {
-		/*if (tiles[world[attempty][attemptx]].type == "water") {
-			players[].setWet(true)
-		} else if (tiles[world[attempty][attemptx]].type == "stone") {
-			if (player.wet == true) {
-				player.setWet(false)
-			}
-		}*/
 		return false;
 	}
 }
@@ -64,9 +57,34 @@ const server = net.createServer((c) => {
   		var connect_json = {"type":"handshake", "token":gid};
   		players[gid] = {"valid":true};
   		c.write(JSON.stringify(connect_json));
-  	} else if (players[jsondata.token].valid == true) {
-  		console.log("got req");
-  		if (jsondata.type == "getworld") {
+  	} else if (players[jsondata.token]) {
+  		if (jsondata.type == "playermove") {
+	  		if (jsondata.data == "up") {
+	  			if (!collision(players[jsondata.token].x, players[jsondata.token].y - 1)) {
+					players[jsondata.token].y -= 1;
+					var player_json = {"type":"player","data":players[jsondata.token]};
+	  				c.write(JSON.stringify(player_json));
+				}
+			} else if (jsondata.data == "down") {
+				if (!collision(players[jsondata.token].x, players[jsondata.token].y + 1)) {
+					players[jsondata.token].y += 1;
+					var player_json = {"type":"player","data":players[jsondata.token]};
+	  				c.write(JSON.stringify(player_json));
+				}
+  			} else if (jsondata.data == "left") {
+				if (!collision(players[jsondata.token].x - 1, players[jsondata.token].y)) {
+					players[jsondata.token].x -= 1;
+					var player_json = {"type":"player","data":players[jsondata.token]};
+	  				c.write(JSON.stringify(player_json));
+				}
+  			} else if (jsondata.data == "right") {
+				if (!collision(players[jsondata.token].x + 1, players[jsondata.token].y)) {
+					players[jsondata.token].x += 1;
+					var player_json = {"type":"player","data":players[jsondata.token]};
+	  				c.write(JSON.stringify(player_json));
+				}
+  			} 
+  		} else if (jsondata.type == "getworld") {
   			var world_json = {"type":"world","data":world};
   			c.write(JSON.stringify(world_json));
   		} else if (jsondata.type == "gettiles") {
@@ -85,13 +103,6 @@ const server = net.createServer((c) => {
 			}
   			var player_json = {"type":"player","data":players[jsondata.token]};
   			c.write(JSON.stringify(player_json));
-  		} else if (jsondata.type == "playerup") {
-  			console.log("got playerup");
-  			if (!collision(players[jsondata.token].x, players[jsondata.token].y - 1)) {
-				players[jsondata.token].y -= 1;
-				var player_json = {"type":"player","data":players[jsondata.token]};
-  				c.write(JSON.stringify(player_json));
-			}
   		}
   	}
   });

@@ -12,8 +12,8 @@ function main() {
 	var token = "";
 	var client;
 	process.stdin.on('keypress', function (chunk, key) {
-	  if (key.name == "up") {
-	  	var send_json = {"type":"playerup","token":token};
+	  if (key.name == "up" || key.name == "down" || key.name == "left" || key.name == "right") {
+	  	var send_json = {"type":"playermove","token":token,"data":key.name};
 	  	client.write(JSON.stringify(send_json));
 	  } else if (key.name == "c") {
 	  	lib.reset();
