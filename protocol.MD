@@ -2,7 +2,7 @@
 ## Networking Protocol
 
 ### Notes
-* All requests are terminated with ";" this acts as a delimeter when concurrent packets get bundled together.
+* All requests and replies are terminated with ";" this acts as a delimeter when concurrent packets get bundled together.
 * The data format used is JSON.
 * For data types refrenced in this document for example: World[], refer to datatypes.MD
 
@@ -28,16 +28,6 @@
 | ------------- | ------------- |
 | "world"       | World[]       |
 
-### World Retrieval
-#### Serverbound
-|type           |token          |
-| ------------- | ------------- |
-| "getworld"    | "XXXXX"       |
-
-#### Clientbound
-|type           |data           |
-| ------------- | ------------- |
-| "world"       | World[]       |
 
 ### Tile Retrieval
 #### Serverbound
@@ -48,7 +38,7 @@
 #### Clientbound
 |type           |data           |
 | ------------- | ------------- |
-| "tiles"       | Tiles[]       |
+| "tiles"       | Tiles{}       |
 
 ### Get the Initial Player
 #### Serverbound
