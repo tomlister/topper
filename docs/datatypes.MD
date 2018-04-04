@@ -17,7 +17,7 @@ var world = [
 
 ### Tiles{}
 The tiles data type is a object that contains tiles.
-Each tile has it's own set of attributes, like colour (ANSI) and type. The attribute "is_tile:true" is used by the renderer (remember to include it).
+Each tile has it's own set of attributes, like colour (ANSI), the amount of damage applied to player if collided with and type. The attribute "is_tile:true" is used by the renderer (remember to include it).
 ```js
 var tiles = {
 	"#": {
@@ -32,7 +32,11 @@ var tiles = {
 		colour:"",
 		type:"air",
 		is_tile:true
-	}
+	}, "^": {
+		colour:"",
+		type:"spike",
+		damage: 15,
+		is_tile:true
 }
 ```
 
