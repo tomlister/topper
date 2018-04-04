@@ -18,6 +18,11 @@ var tiles = {
 		colour:"",
 		type:"air",
 		is_tile:true
+	}, "^": {
+		colour:"",
+		type:"spike",
+		damage:10,
+		is_tile:true
 	}, "●": {
 		colour:"",
 		type:"stone",
@@ -28,9 +33,9 @@ var world = [
 	[" ","#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
 	[" ","#", ".", ".", ".", ".", ".", ".", "~", "~", "~", "~", "~", "~", "~", "#", " ", "#"],
 	[" ","#", ".", ".", ".", ".", ".", ".", "#", "#", "#", "#", "#", "#", "~", "#", " ", "#"],
-	[" ","#", ".", ".", ".", ".", ".", ".", "#", " ", "●", " ", " ", "#", "~", "#", " ", "#"],
-	[" ","#", ".", ".", ".", ".", ".", ".", "#", " ", "●", " ", " ", "#", "~", "#", " ", "#"],
-	[" ","#", ".", ".", ".", ".", ".", ".", "#", " ", "●", " ", " ", "#", "~", "#", " ", "#"],
+	[" ","#", ".", ".", ".", ".", ".", ".", "#", "^", "^", "^", " ", "#", "~", "#", " ", "#"],
+	[" ","#", ".", ".", ".", ".", ".", ".", "#", "^", "^", "^", " ", "#", "~", "#", " ", "#"],
+	[" ","#", ".", ".", ".", ".", ".", ".", "#", "^", "●", "^", " ", "#", "~", "#", " ", "#"],
 	[" ","#", ".", ".", ".", ".", ".", ".", "#", " ", "●", " ", " ", "#", "~", "#", " ", "#"],
 	["#","#", "#", "#", "#", "#", "#", "#", "#", " ", "●", " ", " ", "#", "~", "#", " ", "#"],
 	["#"," ", " ", " ", " ", " ", " ", " ", " ", " ", "●", " ", " ", "~", "●", "~", " ", "#"],
@@ -54,9 +59,14 @@ function genid() {
     return text;
 }
 
-function collision(attemptx, attempty) {
+function collision(attemptx, attempty, token) {
 	if (world[attempty][attemptx] == "#") {
 		return true;
+	} else if (tiles[world[attempty][attemptx]]) {
+		if (tiles[world[attempty][attemptx]].damage) {
+			players[token].health -= tiles[world[attempty][attemptx]].damage;
+		}
+		return false;
 	} else {
 		return false;
 	}
@@ -64,15 +74,19 @@ function collision(attemptx, attempty) {
 
 function overlaydatagen(jsondata) {
 	var overlay_json = {"type":"overlaydata","data":players};
-	clients.forEach(function (client) {
-  		client.write(JSON.stringify(overlay_json)+";");
-	});
+	for (var client in clients) {
+    	if (clients.hasOwnProperty(client)) {
+        	clients[client].write(JSON.stringify(overlay_json)+";");
+    	}
+	}
 }
 
 const server = net.createServer((c) => {
+  var ac_tok = "";
   console.log('Client connected');
-  clients.push(c);
   c.on('end', () => {
+  	delete clients[ac_tok];
+  	delete players[ac_tok];
     console.log('Client disconnected');
   });
   c.on('data', (data) => {
@@ -90,29 +104,31 @@ const server = net.createServer((c) => {
 	  		var gid = genid();
 	  		var connect_json = {"type":"handshake", "token":gid};
 	  		players[gid] = {"valid":true};
+	  		ac_tok = gid;
+	  		clients[gid] = c;
 	  		c.write(JSON.stringify(connect_json)+";");
 	  	} else if (players[jsondata.token]) {
 	  		if (jsondata.type == "playermove") {
 		  		if (jsondata.data == "up") {
-		  			if (!collision(players[jsondata.token].x, players[jsondata.token].y - 1)) {
+		  			if (!collision(players[jsondata.token].x, players[jsondata.token].y - 1, jsondata.token)) {
 						players[jsondata.token].y -= 1;
 						var player_json = {"type":"player","data":players[jsondata.token]};
 		  				c.write(JSON.stringify(player_json)+";");
 					}
 				} else if (jsondata.data == "down") {
-					if (!collision(players[jsondata.token].x, players[jsondata.token].y + 1)) {
+					if (!collision(players[jsondata.token].x, players[jsondata.token].y + 1, jsondata.token)) {
 						players[jsondata.token].y += 1;
 						var player_json = {"type":"player","data":players[jsondata.token]};
 		  				c.write(JSON.stringify(player_json)+";");
 					}
 	  			} else if (jsondata.data == "left") {
-					if (!collision(players[jsondata.token].x - 1, players[jsondata.token].y)) {
+					if (!collision(players[jsondata.token].x - 1, players[jsondata.token].y, jsondata.token)) {
 						players[jsondata.token].x -= 1;
 						var player_json = {"type":"player","data":players[jsondata.token]};
 		  				c.write(JSON.stringify(player_json)+";");
 					}
 	  			} else if (jsondata.data == "right") {
-					if (!collision(players[jsondata.token].x + 1, players[jsondata.token].y)) {
+					if (!collision(players[jsondata.token].x + 1, players[jsondata.token].y, jsondata.token)) {
 						players[jsondata.token].x += 1;
 						var player_json = {"type":"player","data":players[jsondata.token]};
 		  				c.write(JSON.stringify(player_json)+";");

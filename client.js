@@ -80,7 +80,9 @@ function render(callback) {
 	   	}
 	   	lib.printf("Health\n");
 	   	lib.printf("\x1b[31m");
-	   	if (player.health < 10) {
+	   	if (player.health <= 0) {
+	   		lib.printf(healthrender(0));
+	   	} else if (player.health < 10) {
 	   		lib.printf(healthrender(1));
 	   	} else if (player.health < 20) {
 	   		lib.printf(healthrender(2));
@@ -110,7 +112,7 @@ function render(callback) {
 	   		callback();
 	   	}
 	}
-	client = net.createConnection({ port: 7878, host:"10.0.153.91" }, () => {
+	client = net.createConnection({ port: 7878, host:"localhost" }, () => {
 	  var handshake_json = {"type":"handshake"}
 	  client.write(JSON.stringify(handshake_json)+";");
 	});
