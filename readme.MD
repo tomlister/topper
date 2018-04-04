@@ -14,6 +14,6 @@ Remember to change IP addresses as they are currently hardcoded in.
 - [ ] Attack System (wasd)
 - [ ] Monsters
 - [ ] Improve Rendering System
-- [ ] Increase Stability of Networking
+- [x] Increase Stability of Networking
 - [ ] Dynamically Generated Worlds
 - [ ] Loot
