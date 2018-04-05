@@ -1,4 +1,6 @@
 const net = require('net');
+var lib = require("./lib.js")
+
 var players = {};
 var clients = [];
 var tiles = {
@@ -81,13 +83,36 @@ function overlaydatagen(jsondata) {
 	}
 }
 
+function formatBytes(bytes,decimals) {
+   if(bytes == 0) return '0 Bytes';
+   var k = 1024,
+       dm = decimals || 2,
+       sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+       i = Math.floor(Math.log(bytes) / Math.log(k));
+   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function memoryrender() {
+	var usage = process.memoryUsage();
+	var heapPercentage = (usage.heapUsed / usage.heapTotal) * 100;
+	lib.printf("Using "+Math.round(heapPercentage)+"% ("+formatBytes(usage.heapUsed)+") of allocated memory.\n");
+}
+
+function stats() {
+	console.log('--Topper Server--');
+	memoryrender();
+	setInterval(function() {
+		lib.reset();
+		console.log('--Topper Server--');
+		memoryrender();
+	}, 10000)
+}
+
 const server = net.createServer((c) => {
   var ac_tok = "";
-  console.log('Client connected');
   c.on('end', () => {
   	delete clients[ac_tok];
   	delete players[ac_tok];
-    console.log('Client disconnected');
   });
   c.on('data', (data) => {
   	var sp = data.toString()
@@ -177,5 +202,5 @@ server.on('error', (err) => {
   throw err;
 });
 server.listen(7878, () => {
-  console.log('Server Listening...');
+	stats();
 });
