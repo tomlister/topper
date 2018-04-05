@@ -1,4 +1,4 @@
-var lib = require("./lib.js")
+var lib = require("./libs/lib.js")
 var menu = require("./menu.js")
 const net = require('net');
 const readline = require('readline');

@@ -1,5 +1,5 @@
 const net = require('net');
-var lib = require("./lib.js")
+var lib = require("./libs/lib.js")
 
 var players = {};
 var clients = [];
