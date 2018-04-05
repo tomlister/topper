@@ -10,7 +10,7 @@ Remember to change IP addresses as they are currently hardcoded in.
 - [x] Movement
 - [x] Collision
 - [x] Basic Networking
-- [ ] Health System
+- [x] Health System
 - [ ] Attack System (wasd)
 - [ ] Monsters
 - [ ] Improve Rendering System
