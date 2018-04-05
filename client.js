@@ -1,10 +1,11 @@
 var lib = require("./lib.js")
+var menu = require("./menu.js")
 const net = require('net');
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-function main() {
+function main(ip) {
 	var tiles = {};
 	var world = [];
 	var messages = [];
@@ -19,22 +20,7 @@ function main() {
 	  } else if (key.name == "c") {
 	  	lib.reset();
 	  	process.exit();
-	  } /*else if (key.name == "down") {
-	  	if (!collison(player.x, player.y + 1)) {
-	  		player.y += 1;
-	  		render()
-	  	}
-	  } else if (key.name == "left") {
-	  	if (!collison(player.x - 1, player.y)) {
-	  		player.x -= 1;
-	  		render()
-	  	}
-	  } else if (key.name == "right") {
-	  	if (!collison(player.x + 1, player.y)) {
-	  		player.x += 1;
-	  		render()
-	  	}
-	  }*/
+	  }
 	});
 function overlaygen(input) {
 	//populate overlay with empty arrays on the y axis
@@ -82,6 +68,9 @@ function render(callback) {
 	   	lib.printf("\x1b[31m");
 	   	if (player.health <= 0) {
 	   		lib.printf(healthrender(0));
+	   		lib.reset();
+	   		lib.printf("You Died!\n")
+	  		process.exit();
 	   	} else if (player.health < 10) {
 	   		lib.printf(healthrender(1));
 	   	} else if (player.health < 20) {
@@ -112,7 +101,7 @@ function render(callback) {
 	   		callback();
 	   	}
 	}
-	client = net.createConnection({ port: 7878, host:"localhost" }, () => {
+	client = net.createConnection({ port: 7878, host:ip }, () => {
 	  var handshake_json = {"type":"handshake"}
 	  client.write(JSON.stringify(handshake_json)+";");
 	});
@@ -163,4 +152,4 @@ function render(callback) {
 	  console.log('disconnected from server');
 	});
 }
-main();
+menu.menu(main, readline);
