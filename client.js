@@ -1,5 +1,5 @@
 var lib = require("./libs/lib.js")
-var menu = require("./menu.js")
+var menu = require("./libs/menu.js")
 const net = require('net');
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
