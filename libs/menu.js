@@ -2,6 +2,7 @@ var lib = require("./lib.js")
 
 var lock = false;
 var selected = "join";
+var joinselected = "box";
 var menuname = "main";
 var ipbuff = "";
 function rendermenu(){
@@ -41,7 +42,9 @@ function joinmenu() {
 	lib.printf("\n");
 	lib.printf("IP ADDRESS");
 	lib.printf("\n");
-	lib.printf("\x1b[31m");
+	if (joinselected == "box") {
+		lib.printf("\x1b[31m");
+	}
 	lib.printl("▁", 17);
 	lib.printf("\n");
 	if (ipbuff == '') {
@@ -55,6 +58,15 @@ function joinmenu() {
 	}
 	lib.printf("\n");
 	lib.printl("▔", 17);
+	lib.printf("\x1b[0m\n");
+	if (joinselected == "exit") {
+		lib.printf("\x1b[31m");
+	}
+	lib.printl("▁", 10);
+	lib.printf("\n");
+	lib.printf("█  EXIT  █");
+	lib.printf("\n");
+	lib.printl("▔", 10);
 	lib.printf("\x1b[0m\n");
 }
 function menu(callback, readline) {
@@ -82,19 +94,40 @@ function menu(callback, readline) {
 				  	}
 			  	}
 			} else if (menuname == "join") {
-				if (key.name == 1 || key.name == 2 || key.name == 3 || key.name == 4 || key.name == 5 || key.name == 6 || key.name == 8 || key.name == 9 || key.name == 0 || key.sequence == ".") {
-					if (ipbuff.length != 15) {
-						if (key.sequence == ".") {
-							ipbuff += key.sequence;
-						} else {
-							ipbuff += key.name;
+				if (key.name == "up") {
+					if (joinselected == "exit") {
+				  		joinselected = "box";
+				  	}
+				  	joinmenu();
+				} else if (key.name == "down") {
+				  	if (joinselected == "box") {
+				  		joinselected = "exit";
+				  	}
+			  		joinmenu();
+				}
+				if (joinselected == "box") {
+					if (key.name == 1 || key.name == 2 || key.name == 3 || key.name == 4 || key.name == 5 || key.name == 6 || key.name == 8 || key.name == 9 || key.name == 0 || key.sequence == ".") {
+						if (ipbuff.length != 15) {
+							if (key.sequence == ".") {
+								ipbuff += key.sequence;
+							} else {
+								ipbuff += key.name;
+							}
+							joinmenu();
 						}
+					} else if (key.name == "backspace") {
+						ipbuff = ipbuff.slice(0, -1)
 						joinmenu();
-					}
-				} else if (key.name == "return") {
-					lock = true;
-					callback(ipbuff);
-			  	}
+					}else if (key.name == "return") {
+						lock = true;
+						callback(ipbuff);
+				  	}
+				} else if (joinselected == "exit") {
+					if (key.name == "return") {
+						menuname = "main";
+						rendermenu();
+				  	}
+				}
 			}
 		}
 	});
