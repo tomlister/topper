@@ -17,6 +17,9 @@ function main(ip) {
 	  if (key.name == "up" || key.name == "down" || key.name == "left" || key.name == "right") {
 	  	var send_json = {"type":"playermove","token":token,"data":key.name};
 	  	client.write(JSON.stringify(send_json)+";");
+	  } else if (key.name == "w" || key.name == "a" || key.name == "s" || key.name == "d") {
+	  	var send_json = {"type":"attack","token":token,"data":key.name};
+	  	client.write(JSON.stringify(send_json)+";");
 	  } else if (key.name == "c") {
 	  	lib.reset();
 	  	process.exit();

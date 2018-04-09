@@ -193,6 +193,64 @@ const server = net.createServer((c) => {
 				}
 	  			var overlay_json = {"type":"overlaydata","data":overlaydata};
 	  			c.write(JSON.stringify(overlay_json)+";");
+	  		} else if (jsondata.type == "attack") {
+	  			if (jsondata.data == "d") {
+	  				var y = players[jsondata.token].y;
+	  				for (var x = players[jsondata.token].x + 1; x < world[0].length; x++) {
+	  					for (var p in players) {
+							if (players.hasOwnProperty(p)) {
+						        if (players[p].x == x && players[p].y == y) {
+						        	players[p].health -= 15;
+						        	var player_json = {"type":"player","data":players[p]};
+		  							clients[p].write(JSON.stringify(player_json)+";");
+						        }
+						    }
+						}
+	  				}
+	  			} else if (jsondata.data == "a") {
+	  				lib.printf("a\n");
+	  				var y = players[jsondata.token].y;
+	  				lib.printf("x: "+players[jsondata.token].x);
+	  				for (var x = players[jsondata.token].x - 1; x >= 0; x--) {
+	  					lib.printf(x+"\n");
+	  					for (var p in players) {
+							if (players.hasOwnProperty(p)) {
+						        if (players[p].x == x && players[p].y == y) {
+						        	lib.printf("hit\n");
+						        	players[p].health -= 15;
+						        	var player_json = {"type":"player","data":players[p]};
+		  							clients[p].write(JSON.stringify(player_json)+";");
+						        }
+						    }
+						}
+	  				}
+	  			} else if (jsondata.data == "w") {
+	  				var x = players[jsondata.token].x;
+	  				for (var y = players[jsondata.token].y - 1; y >= 0; y--) {
+	  					for (var p in players) {
+							if (players.hasOwnProperty(p)) {
+						        if (players[p].x == x && players[p].y == y) {
+						        	players[p].health -= 15;
+						        	var player_json = {"type":"player","data":players[p]};
+		  							clients[p].write(JSON.stringify(player_json)+";");
+						        }
+						    }
+						}
+	  				}
+	  			} else if (jsondata.data == "s") {
+	  				var x = players[jsondata.token].x;
+	  				for (var y = players[jsondata.token].y + 1; y < world[0].length; y++) {
+	  					for (var p in players) {
+							if (players.hasOwnProperty(p)) {
+						        if (players[p].x == x && players[p].y == y) {
+						        	players[p].health -= 15;
+						        	var player_json = {"type":"player","data":players[p]};
+		  							clients[p].write(JSON.stringify(player_json)+";");
+						        }
+						    }
+						}
+	  				}
+	  			}
 	  		}
   		}
   	}
@@ -202,5 +260,5 @@ server.on('error', (err) => {
   throw err;
 });
 server.listen(7878, () => {
-	stats();
+	//stats();
 });

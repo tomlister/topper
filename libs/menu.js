@@ -106,7 +106,7 @@ function menu(callback, readline) {
 			  		joinmenu();
 				}
 				if (joinselected == "box") {
-					if (key.name == 1 || key.name == 2 || key.name == 3 || key.name == 4 || key.name == 5 || key.name == 6 || key.name == 8 || key.name == 9 || key.name == 0 || key.sequence == ".") {
+					if (key.name == 1 || key.name == 2 || key.name == 3 || key.name == 4 || key.name == 5 || key.name == 6 || key.name == 7 || key.name == 8 || key.name == 9 || key.name == 0 || key.sequence == ".") {
 						if (ipbuff.length != 15) {
 							if (key.sequence == ".") {
 								ipbuff += key.sequence;
