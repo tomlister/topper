@@ -11,7 +11,7 @@ Remember to change IP addresses as they are currently hardcoded in.
 - [x] Collision
 - [x] Basic Networking
 - [x] Health System
-- [ ] Attack System (wasd)
+- [x] Attack System (wasd)
 - [ ] Monsters
 - [ ] Improve Rendering System
 - [x] Increase Stability of Networking
