@@ -31,6 +31,5 @@ function broadcast() {
 function broadcastf() {
     var message = new Buffer(JSON.stringify(data));
     server.send(message, 0, message.length, port, mcastaddr);
-    console.log("Sent " + message + " to multicast address");
 }
 module.exports.broadcast = broadcast;
