@@ -128,7 +128,7 @@ function menu(callback, readline) {
 						rendermenu();
 					} else if (serveruistack[serveruipos].ip) {
 						lock = true;
-						callback(ipbuff);
+						callback(serveruistack[serveruipos].ip);
 						clearInterval(searchloop);
 					}
 				}
