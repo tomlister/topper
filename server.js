@@ -1,5 +1,6 @@
 const net = require('net');
 var lib = require("./libs/lib.js")
+var broadcast = require("./libs/broadcast.js")
 
 var players = {};
 var clients = [];
@@ -257,4 +258,5 @@ server.on('error', (err) => {
 });
 server.listen(7878, () => {
 	stats();
+	broadcast.broadcast();
 });

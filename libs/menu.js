@@ -1,87 +1,150 @@
 var lib = require("./lib.js")
+var ui = require("./ui.js")
+var broadcast_recv = require("./broadcast_recv.js")
 
 var lock = false;
-var selected = "join";
+var selected = "servers";
 var joinselected = "box";
+var serveruistack = ["exit"];
+var serveruipos = 0;
 var menuname = "main";
 var ipbuff = "";
+var searching = false;
+var servers = [];
+var searchloop;
+function arraycb() {
+	return servers;
+}
+function searcher_add(add) {
+	var exists = false;
+	for (var i = 0; i < servers.length; i++) {
+		if (servers[i].ip == add.ip) {
+			exists = true;
+			break;
+		}
+	}
+	if (exists == false) {
+		servers.push(add);
+	}
+}
+function searcher() {
+	if (searching == false) {
+		searching = true;
+		broadcast_recv.search(searcher_add);
+	}
+	searchloop = setInterval(function() {
+			if (menuname == "servers") {
+				for (var i = 0; i < servers.length; i++) {
+					var exists = false;
+					for (var x = 0; x < serveruistack.length; x++) {
+						if (serveruistack[x].ip == servers[i].ip) {
+							exists = true;
+							break;
+						}
+					}
+					if (exists == false) {
+						serveruistack.unshift(servers[i]);
+					}
+				}
+				if (serveruistack[serveruipos] == "exit") {
+					serveruipos = serveruistack.length-1;
+				}
+				serversmenu();
+			} else {
+				clearInterval(searchloop)	
+			}
+		}, 1000)
+}
+
 function rendermenu(){
 	lib.reset();
-	lib.printl("▄", 10);
-	lib.printf("\n");
-	lib.printf("█ TOPPER █");
-	lib.printf("\n");
-	lib.printl("▀", 10);
-	lib.printf("\n");
+	ui.title("TOPPER", 3);
+	if (selected == "servers") {
+		lib.printf("\x1b[31m");
+	}
+	ui.button("SERVERS");
+	lib.printf("\x1b[0m");
 	if (selected == "join") {
 		lib.printf("\x1b[31m");
 	}
-	lib.printl("▁", 10);
-	lib.printf("\n");
-	lib.printf("█  JOIN  █");
-	lib.printf("\n");
-	lib.printl("▔", 10);
-	lib.printf("\x1b[0m\n");
+	ui.button("JOIN", 5);
+	lib.printf("\x1b[0m");
 	if (selected == "exit") {
 		lib.printf("\x1b[31m");
 	}
-	lib.printl("▁", 10);
-	lib.printf("\n");
-	lib.printf("█  EXIT  █");
-	lib.printf("\n");
-	lib.printl("▔", 10);
-	lib.printf("\x1b[0m\n");
+	ui.button("EXIT", 5);
+	lib.printf("\x1b[0m");
 }
 function joinmenu() {
 	lib.reset();
-	lib.printl("▄", 10);
-	lib.printf("\n");
-	lib.printf("█  JOIN  █");
-	lib.printf("\n");
-	lib.printl("▀", 10);
-	lib.printf("\n");
-	lib.printf("IP ADDRESS");
+	ui.title("JOIN");
+	ui.text("IP ADDRESS");
 	lib.printf("\n");
 	if (joinselected == "box") {
 		lib.printf("\x1b[31m");
 	}
-	lib.printl("▁", 17);
-	lib.printf("\n");
-	if (ipbuff == '') {
-		lib.printf("█");
-		lib.printl(" ", 15);
-		lib.printf("█");
-	} else {
-		lib.printf("█"+ipbuff);
-		lib.printl(" ", 15 - ipbuff.length);
-		lib.printf("█");
-	}
-	lib.printf("\n");
-	lib.printl("▔", 17);
-	lib.printf("\x1b[0m\n");
+	ui.input(ipbuff);
+	lib.printf("\x1b[0m");
 	if (joinselected == "exit") {
 		lib.printf("\x1b[31m");
 	}
-	lib.printl("▁", 10);
-	lib.printf("\n");
-	lib.printf("█  EXIT  █");
-	lib.printf("\n");
-	lib.printl("▔", 10);
-	lib.printf("\x1b[0m\n");
+	ui.button("BACK");
+	lib.printf("\x1b[0m");
+}
+function serversmenu() {
+	lib.reset();
+	ui.title("SERVERS");
+	for (var i = 0; i < servers.length; i++) {
+		if (serveruistack[serveruipos] == servers[i]) {
+			lib.printf("\x1b[31m");
+		}
+		ui.button(servers[i].message+" on "+servers[i].ip)
+		lib.printf("\x1b[0m");
+	}
+	if (serveruistack[serveruipos] == "exit") {
+		lib.printf("\x1b[31m");
+	}
+	ui.button("BACK");
+	lib.printf("\x1b[0m");
 }
 function menu(callback, readline) {
 	rendermenu();
 	process.stdin.on('keypress', function (chunk, key) {
 		if (lock == false) {
-			if (menuname == "main") {
+			if (menuname == "servers") {
+				if (key.name == "up") {
+					if (serveruipos != 0) {
+						serveruipos -= 1;
+					}
+				  	serversmenu();
+				} else if (key.name == "down") {
+				  	if (serveruipos != serveruistack.length-1) {
+						serveruipos += 1;
+					}
+			  		serversmenu();
+				} else if (key.name = "return") {
+					if (serveruistack[serveruipos] == "exit") {
+						menuname = "main";
+						rendermenu();
+					} else if (serveruistack[serveruipos].ip) {
+						lock = true;
+						callback(ipbuff);
+						clearInterval(searchloop);
+					}
+				}
+			} else if (menuname == "main") {
 				if (key.name == "up") {
 					if (selected == "exit") {
 				  		selected = "join";
+				  	} else if (selected == "join") {
+				  		selected = "servers";
 				  	}
 				  	rendermenu();
 				} else if (key.name == "down") {
 				  	if (selected == "join") {
 				  		selected = "exit";
+				  	} else if (selected == "servers") {
+				  		selected = "join";
 				  	}
 			  		rendermenu();
 				} else if (key.name == "return") {
@@ -91,6 +154,10 @@ function menu(callback, readline) {
 				  	} else if (selected == "exit") {
 				  		lib.reset();
 				  		process.exit();
+				  	} else if (selected == "servers") {
+				  		menuname = "servers";
+				  		searcher();
+				  		serversmenu();
 				  	}
 			  	}
 			} else if (menuname == "join") {
@@ -118,7 +185,7 @@ function menu(callback, readline) {
 					} else if (key.name == "backspace") {
 						ipbuff = ipbuff.slice(0, -1)
 						joinmenu();
-					}else if (key.name == "return") {
+					} else if (key.name == "return") {
 						lock = true;
 						callback(ipbuff);
 				  	}

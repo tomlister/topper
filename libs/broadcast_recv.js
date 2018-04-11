@@ -5,9 +5,10 @@ var dgram = require('dgram');
 var os = require('os');
 var ifaces = os.networkInterfaces();
 var client = dgram.createSocket({ type: 'udp4', reuseAddr: true })
-function search() {
+function search(callback) {
 	client.on('message', function (message, remote) {   
-    	return message;
+		var parsed = JSON.parse(message);
+		callback(parsed);
 	});
 	Object.keys(ifaces).forEach(function (ifname) {
 	  var alias = 0;
